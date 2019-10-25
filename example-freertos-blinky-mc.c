@@ -301,11 +301,8 @@ static void prvSetupHardware( void )
 			write( STDOUT_FILENO, pcErrorMsg, strlen( pcErrorMsg ) );
 
 			for( ;; );
-		} else {
-			// disable all external interrupts
-			*((volatile unsigned int *)(METAL_RISCV_PLIC0_C000000_BASE_ADDRESS + METAL_RISCV_PLIC0_ENABLE_BASE)) = 0;
-			*((volatile unsigned int *)(METAL_RISCV_PLIC0_C000000_BASE_ADDRESS + METAL_RISCV_PLIC0_ENABLE_BASE+4)) = 0;
-		}
+		} 
+		metal_interrupt_init(plic);
 	}
 #endif
 
@@ -319,15 +316,10 @@ static void prvSetupHardware( void )
 			write( STDOUT_FILENO, pcErrorMsg, strlen( pcErrorMsg ) );
 
 			for( ;; );
-		} else {
-			// disable all external interrupts
-			*((volatile unsigned int *)(METAL_SIFIVE_CLIC0_2000000_BASE_ADDRESS + METAL_SIFIVE_CLIC0_CLICINTIE_BASE)) = 0;
-			*((volatile unsigned int *)(METAL_SIFIVE_CLIC0_2000000_BASE_ADDRESS + METAL_SIFIVE_CLIC0_CLICINTIE_BASE+4)) = 0;
-		}
+		} 
+		metal_interrupt_init(clic);
 	}
 #endif
-
-
 
     // This demo will toggle LEDs colors so we define them here
     led0_red = metal_led_get_rgb("LD0", "red");
