@@ -15,7 +15,7 @@ C_SOURCES = $(wildcard *.c)
 # ----------------------------------------------------------------------
 
 #     Include FREERTOS source from thirdparty directory
-include ../../thirdparty/FreeRTOS/FreeRTOS.mk
+include ../../FreeRTOS-metal/FreeRTOS.mk
 
 #     Add FreeRTOS include 
 _COMMON_CFLAGS  += -I./
@@ -53,11 +53,6 @@ _ASM_OBJ_FILES := $(_asm_s:%.s=${OBJ_DIR}/%.o) $(_asm_S:%.S=${OBJ_DIR}/%.o)
 OBJS += ${_C_OBJ_FILES}
 OBJS += ${_CXX_OBJ_FILES}
 OBJS += ${_ASM_OBJ_FILES}
-
-# ----------------------------------------------------------------------
-# Include eclipse.mk: Transform names so the eclipse indexer works.
-# ----------------------------------------------------------------------
-include ../../scripts/eclipse.mk
 
 # ----------------------------------------------------------------------
 # Compile Object Files From Assembly
