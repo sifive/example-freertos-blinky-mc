@@ -4,7 +4,7 @@
 # Provide a default for no verbose output
 HIDE ?= @
 
-PROGRAM ?= freertos_demo
+PROGRAM ?= example-freertos-blinky-mc
 
 OBJ_DIR ?= ./$(CONFIGURATION)/build
 
@@ -17,13 +17,15 @@ C_SOURCES = $(wildcard *.c)
 #     Include FREERTOS source from thirdparty directory
 include ../../FreeRTOS-metal/FreeRTOS.mk
 
+
+$(info freertos_includes = $(FREERTOS_INCLUDES))
+
+
 #     Add FreeRTOS include 
 _COMMON_CFLAGS  += -I./
 _COMMON_CFLAGS  += ${FREERTOS_INCLUDES}
 _COMMON_CFLAGS  += -DportHANDLE_INTERRUPT=FreedomMetal_InterruptHandler
 _COMMON_CFLAGS  += -DportHANDLE_EXCEPTION=FreedomMetal_ExceptionHandler
-
-$(info common_flags = [$(_COMMON_CFLAGS)])
 
 #     Add define needed for FreeRTOS 
 _COMMON_CFLAGS  += -DMTIME_CTRL_ADDR=0x2000000
@@ -59,7 +61,7 @@ OBJS += ${_ASM_OBJ_FILES}
 # ----------------------------------------------------------------------
 $(OBJ_DIR)/%.o: %.S
 	@echo "Assemble: $<"
-	$(HIDE)$(CC) -D__ASSEMBLY__ -c -o $@ $(_ASFLAGS4) $<
+	$(HIDE)$(CC) -D__ASSEMBLY__ -c -o $@ $(ASFLAGS) $(CPPFLAGS) $(_COMMON_CFLAGS) $<
 	@echo
 
 # ----------------------------------------------------------------------
@@ -67,7 +69,7 @@ $(OBJ_DIR)/%.o: %.S
 # ----------------------------------------------------------------------
 $(OBJ_DIR)/%.o: %.c
 	@echo "Compile: $<"
-	$(HIDE)$(CC) -c -o $@ $(_CFLAGS4) $<
+	$(HIDE)$(CC) -c -o $@ $(CFLAGS) $(CPPFLAGS) $(CFLAGS_COMMON) $(_COMMON_CFLAGS) $<
 	@echo
 
 # ----------------------------------------------------------------------
@@ -75,11 +77,13 @@ $(OBJ_DIR)/%.o: %.c
 # ----------------------------------------------------------------------
 $(OBJ_DIR)/%.o: %.cpp
 	@echo "Compile: $<"
-	$(HIDE)$(CXX) -c -o $@ $(_CXXFLAGS4) $<
+	$(HIDE)$(CXX) -c -o $@ $(CXXFLAGS) $(CPPFLAGS) $(CFLAGS_COMMON) $(_COMMON_CFLAGS) $<
 
 # ----------------------------------------------------------------------
 # Add custom flags for link
 # ----------------------------------------------------------------------
+# Reduce default size of the stack and the heap
+#
 _ADD_LDFLAGS  += -Wl,--defsym,__stack_size=0x200
 _ADD_LDFLAGS  += -Wl,--defsym,__heap_size=0x4D0
 
@@ -100,6 +104,8 @@ directories: $(BUILD_DIRECTORIES)
 $(PROGRAM): \
 	directories \
 	$(OBJS)
+	@echo 
+	$(info env target_root = $(TARGET_ROOT))
 	$(CC) $(CFLAGS) $(LDFLAGS) $(_ADD_LDFLAGS) $(OBJS) $(LOADLIBES) $(LDLIBS) -o $@
 	@echo
 
