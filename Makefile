@@ -17,10 +17,6 @@ C_SOURCES = $(wildcard *.c)
 #     Include FREERTOS source from thirdparty directory
 include ../../FreeRTOS-metal/FreeRTOS.mk
 
-
-$(info freertos_includes = $(FREERTOS_INCLUDES))
-
-
 #     Add FreeRTOS include 
 _COMMON_CFLAGS  += -I./
 _COMMON_CFLAGS  += ${FREERTOS_INCLUDES}
